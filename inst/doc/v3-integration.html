@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+
+<html lang="en" xml:lang="en">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Maciej Beręsewicz" />
+
+
+<title>Integration with existing packages</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Integration with existing packages</h1>
+<h4 class="author">Maciej Beręsewicz</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#setup" id="toc-setup"><span class="toc-section-number">1</span> Setup</a></li>
+<li><a href="#data" id="toc-data"><span class="toc-section-number">2</span> Data</a></li>
+<li><a href="#integration-with-the-reclin2-package" id="toc-integration-with-the-reclin2-package"><span class="toc-section-number">3</span> Integration with the
+<code>reclin2</code> package</a></li>
+<li><a href="#usage-with-fastlink-package" id="toc-usage-with-fastlink-package"><span class="toc-section-number">4</span> Usage with <code>fastLink</code>
+package</a></li>
+<li><a href="#usage-with-recordlinkage-package" id="toc-usage-with-recordlinkage-package"><span class="toc-section-number">5</span> Usage with
+<code>RecordLinkage</code> package</a></li>
+</ul>
+</div>
+
+<div id="setup" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Setup</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(blocking)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(reclin2)</span></code></pre></div>
+</div>
+<div id="data" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Data</h1>
+<p>In the example we will use the same dataset as in the <em>Blocking
+records for record linkage</em> vignette.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">data</span>(census)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">data</span>(cis)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>census[, x<span class="sc">:=</span><span class="dv">1</span><span class="sc">:</span>.N]</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>cis[, y<span class="sc">:=</span><span class="dv">1</span><span class="sc">:</span>.N]</span></code></pre></div>
+</div>
+<div id="integration-with-the-reclin2-package" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Integration with the
+<code>reclin2</code> package</h1>
+<p>The package contains function <code>pair_ann</code> which aims at
+integration with <code>reclin2</code> package. This function works as
+follows.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">pair_ann</span>(<span class="at">x =</span> census[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>], </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>         <span class="at">y =</span> cis[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>], </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>         <span class="at">on =</span> <span class="fu">c</span>(<span class="st">&quot;pername1&quot;</span>, <span class="st">&quot;pername2&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;dob_day&quot;</span>, <span class="st">&quot;dob_mon&quot;</span>, <span class="st">&quot;dob_year&quot;</span>, <span class="st">&quot;enumcap&quot;</span>, <span class="st">&quot;enumpc&quot;</span>), </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>         <span class="at">deduplication =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<div class="kable-table">
+<table>
+<thead>
+<tr class="header">
+<th align="right">.x</th>
+<th align="right">.y</th>
+<th align="right">block</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">204</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">204</td>
+<td align="right">176</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">204</td>
+<td align="right">375</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">204</td>
+<td align="right">391</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">204</td>
+<td align="right">405</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">204</td>
+<td align="right">424</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Which provides you information on the total number of pairs. This can
+be further included in the pipeline of the <code>reclin2</code> package
+(note that we use a different ANN this time).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">pair_ann</span>(<span class="at">x =</span> census[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>], </span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>         <span class="at">y =</span> cis[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>], </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>         <span class="at">on =</span> <span class="fu">c</span>(<span class="st">&quot;pername1&quot;</span>, <span class="st">&quot;pername2&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;dob_day&quot;</span>, <span class="st">&quot;dob_mon&quot;</span>, <span class="st">&quot;dob_year&quot;</span>, <span class="st">&quot;enumcap&quot;</span>, <span class="st">&quot;enumpc&quot;</span>), </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>         <span class="at">deduplication =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>         <span class="at">ann =</span> <span class="st">&quot;hnsw&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">compare_pairs</span>(<span class="at">on =</span> <span class="fu">c</span>(<span class="st">&quot;pername1&quot;</span>, <span class="st">&quot;pername2&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;dob_day&quot;</span>, <span class="st">&quot;dob_mon&quot;</span>, <span class="st">&quot;dob_year&quot;</span>, <span class="st">&quot;enumcap&quot;</span>, <span class="st">&quot;enumpc&quot;</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>                <span class="at">comparators =</span> <span class="fu">list</span>(<span class="fu">cmp_jarowinkler</span>())) <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">score_simple</span>(<span class="st">&quot;score&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>               <span class="at">on =</span> <span class="fu">c</span>(<span class="st">&quot;pername1&quot;</span>, <span class="st">&quot;pername2&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;dob_day&quot;</span>, <span class="st">&quot;dob_mon&quot;</span>, <span class="st">&quot;dob_year&quot;</span>, <span class="st">&quot;enumcap&quot;</span>, <span class="st">&quot;enumpc&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="fu">select_threshold</span>(<span class="st">&quot;threshold&quot;</span>, <span class="at">score =</span> <span class="st">&quot;score&quot;</span>, <span class="at">threshold =</span> <span class="dv">6</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">link</span>(<span class="at">selection =</span> <span class="st">&quot;threshold&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
+<div class="kable-table">
+<table style="width:100%;">
+<colgroup>
+<col width="1%" />
+<col width="1%" />
+<col width="3%" />
+<col width="2%" />
+<col width="2%" />
+<col width="1%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="5%" />
+<col width="2%" />
+<col width="4%" />
+<col width="5%" />
+<col width="4%" />
+<col width="1%" />
+<col width="12%" />
+<col width="3%" />
+<col width="2%" />
+<col width="2%" />
+<col width="1%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="5%" />
+<col width="2%" />
+<col width="4%" />
+<col width="1%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">.y</th>
+<th align="right">.x</th>
+<th align="left">person_id.x</th>
+<th align="left">pername1.x</th>
+<th align="left">pername2.x</th>
+<th align="left">sex.x</th>
+<th align="left">dob_day.x</th>
+<th align="left">dob_mon.x</th>
+<th align="left">dob_year.x</th>
+<th align="right">hse_num</th>
+<th align="left">enumcap.x</th>
+<th align="left">enumpc.x</th>
+<th align="left">str_nam</th>
+<th align="left">cap_add</th>
+<th align="left">census_id</th>
+<th align="right">x</th>
+<th align="left">txt.x</th>
+<th align="left">person_id.y</th>
+<th align="left">pername1.y</th>
+<th align="left">pername2.y</th>
+<th align="left">sex.y</th>
+<th align="left">dob_day.y</th>
+<th align="left">dob_mon.y</th>
+<th align="left">dob_year.y</th>
+<th align="left">enumcap.y</th>
+<th align="left">enumpc.y</th>
+<th align="left">cis_id</th>
+<th align="right">y</th>
+<th align="left">txt.y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">11</td>
+<td align="right">945</td>
+<td align="left">DE256NG039003</td>
+<td align="left">HARRIET</td>
+<td align="left">THOMSON</td>
+<td align="left">F</td>
+<td align="left">12</td>
+<td align="left">1</td>
+<td align="left">1995</td>
+<td align="right">39</td>
+<td align="left">39 SPRINGFIELD ROAD</td>
+<td align="left">DE256NG</td>
+<td align="left">Springfield Road</td>
+<td align="left">39, Springfield Road</td>
+<td align="left">CENSDE256NG039003</td>
+<td align="right">945</td>
+<td align="left">HARRIETTHOMSONF121199539 SPRINGFIELD ROADDE256NG</td>
+<td align="left">DE256NG039003</td>
+<td align="left">HARRIET</td>
+<td align="left">THOMSON</td>
+<td align="left">F</td>
+<td align="left">12</td>
+<td align="left">1</td>
+<td align="left"></td>
+<td align="left">39 SPRINGFIELD ROAD</td>
+<td align="left">DE256NG</td>
+<td align="left">CISDE256NG039003</td>
+<td align="right">11</td>
+<td align="left">HARRIETTHOMSONF12139 SPRINGFIELD ROADDE256NG</td>
+</tr>
+<tr class="even">
+<td align="right">71</td>
+<td align="right">427</td>
+<td align="left">DE159QA062001</td>
+<td align="left">LEWIS</td>
+<td align="left">GREEN</td>
+<td align="left">M</td>
+<td align="left">23</td>
+<td align="left">3</td>
+<td align="left">1973</td>
+<td align="right">62</td>
+<td align="left">62 CHURCH ROAD</td>
+<td align="left">DE159QA</td>
+<td align="left">Church Road</td>
+<td align="left">62, Church Road</td>
+<td align="left">CENSDE159QA062001</td>
+<td align="right">427</td>
+<td align="left">LEWISGREENM233197362 CHURCH ROADDE159QA</td>
+<td align="left">DE159QA062001</td>
+<td align="left">LEWIS</td>
+<td align="left">GREEN</td>
+<td align="left">M</td>
+<td align="left">23</td>
+<td align="left">3</td>
+<td align="left"></td>
+<td align="left">62 CHURCH ROAD</td>
+<td align="left">DE159QA</td>
+<td align="left">CISDE159QA062001</td>
+<td align="right">71</td>
+<td align="left">LEWISGREENM23362 CHURCH ROADDE159QA</td>
+</tr>
+<tr class="odd">
+<td align="right">83</td>
+<td align="right">720</td>
+<td align="left">DE237GG025002</td>
+<td align="left">IMOGEN</td>
+<td align="left">DARIS</td>
+<td align="left">F</td>
+<td align="left">6</td>
+<td align="left">4</td>
+<td align="left">1968</td>
+<td align="right">25</td>
+<td align="left">25 WOODLANDS ROAD</td>
+<td align="left">DE237GG</td>
+<td align="left">Woodlands Road</td>
+<td align="left">25, Woodlands Road</td>
+<td align="left">CENSDE237GG025002</td>
+<td align="right">720</td>
+<td align="left">IMOGENDARISF64196825 WOODLANDS ROADDE237GG</td>
+<td align="left">DE237GG025002</td>
+<td align="left">IMOGEW</td>
+<td align="left">DAVIS</td>
+<td align="left">F</td>
+<td align="left">6</td>
+<td align="left">4</td>
+<td align="left"></td>
+<td align="left">25 WOODLANDS ROAD</td>
+<td align="left">DE237GG</td>
+<td align="left">CISDE237GG025002</td>
+<td align="right">83</td>
+<td align="left">IMOGEWDAVISF6425 WOODLANDS ROADDE237GG</td>
+</tr>
+<tr class="even">
+<td align="right">99</td>
+<td align="right">136</td>
+<td align="left">DE125LU022001</td>
+<td align="left">DANIEC</td>
+<td align="left">MICCER</td>
+<td align="left">M</td>
+<td align="left">21</td>
+<td align="left">4</td>
+<td align="left">1947</td>
+<td align="right">22</td>
+<td align="left">22 PARK LANE</td>
+<td align="left">DE125LU</td>
+<td align="left">Park Lane</td>
+<td align="left">22, Park Lane</td>
+<td align="left">CENSDE125LU022001</td>
+<td align="right">136</td>
+<td align="left">DANIECMICCERM214194722 PARK LANEDE125LU</td>
+<td align="left">DE125LU022001</td>
+<td align="left">DAMIEL</td>
+<td align="left">HILLER</td>
+<td align="left">M</td>
+<td align="left">21</td>
+<td align="left">4</td>
+<td align="left"></td>
+<td align="left">22 PARK LANE</td>
+<td align="left">DE125LU</td>
+<td align="left">CISDE125LU022001</td>
+<td align="right">99</td>
+<td align="left">DAMIELHILLERM21422 PARK LANEDE125LU</td>
+</tr>
+<tr class="odd">
+<td align="right">154</td>
+<td align="right">949</td>
+<td align="left">DE256NG040002</td>
+<td align="left">CHLOE</td>
+<td align="left">WILSON</td>
+<td align="left">F</td>
+<td align="left">5</td>
+<td align="left">7</td>
+<td align="left">1978</td>
+<td align="right">40</td>
+<td align="left">40 SPRINGFIELD ROAD</td>
+<td align="left">DE256NG</td>
+<td align="left">Springfield Road</td>
+<td align="left">40, Springfield Road</td>
+<td align="left">CENSDE256NG040002</td>
+<td align="right">949</td>
+<td align="left">CHLOEWILSONF57197840 SPRINGFIELD ROADDE256NG</td>
+<td align="left">DE256NG040002</td>
+<td align="left">CHLOE</td>
+<td align="left">WILSOM</td>
+<td align="left">F</td>
+<td align="left">5</td>
+<td align="left">7</td>
+<td align="left"></td>
+<td align="left">40 SPRINGFIELD ROAD</td>
+<td align="left">DE256NG</td>
+<td align="left">CISDE256NG040002</td>
+<td align="right">154</td>
+<td align="left">CHLOEWILSOMF5740 SPRINGFIELD ROADDE256NG</td>
+</tr>
+<tr class="even">
+<td align="right">156</td>
+<td align="right">549</td>
+<td align="left">DE159QY035002</td>
+<td align="left">AVA</td>
+<td align="left">KING</td>
+<td align="left">F</td>
+<td align="left">7</td>
+<td align="left">7</td>
+<td align="left">1969</td>
+<td align="right">35</td>
+<td align="left">35 CHURCH ROAD</td>
+<td align="left">DE159QY</td>
+<td align="left">Church Road</td>
+<td align="left">35, Church Road</td>
+<td align="left">CENSDE159QY035002</td>
+<td align="right">549</td>
+<td align="left">AVAKINGF77196935 CHURCH ROADDE159QY</td>
+<td align="left">DE159QY035002</td>
+<td align="left">AVA</td>
+<td align="left">KING</td>
+<td align="left">F</td>
+<td align="left">7</td>
+<td align="left">7</td>
+<td align="left"></td>
+<td align="left">35 CHURCH ROAD</td>
+<td align="left">DE159QY</td>
+<td align="left">CISDE159QY035002</td>
+<td align="right">156</td>
+<td align="left">AVAKINGF7735 CHURCH ROADDE159QY</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="usage-with-fastlink-package" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Usage with
+<code>fastLink</code> package</h1>
+<p>Just use the <code>block</code> column in the function
+<code>fastLink::blockData()</code>. As a result you will obtain a list
+of records blocked for further processing.</p>
+</div>
+<div id="usage-with-recordlinkage-package" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Usage with
+<code>RecordLinkage</code> package</h1>
+<p>Just use the <code>block</code> column in the argument
+<code>blockfld</code> in the <code>compare.dedup()</code> or
+<code>compare.linkage()</code> function. Please note that
+<code>block</code> column for the <code>RecordLinkage</code> package
+should be stored as a <code>character</code> not a
+<code>numeric/integer</code> vector.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

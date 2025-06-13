@@ -1,0 +1,189 @@
+---
+title: "Blocking records for record linkage"
+author: "Maciej Beręsewicz"
+execute:
+  warning: false
+  message: false
+lang: en
+output: 
+    html_vignette:
+        df_print: kable
+        toc: true
+        number_sections: true
+        fig_width: 6
+        fig_height: 4
+vignette: >
+  %\VignetteIndexEntry{Blocking records for record linkage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Setup
+
+Read required packages
+
+```{r setup}
+library(blocking)
+library(data.table)
+```
+
+# Data
+
+Read the example data from the tutorial on [the `reclin` package on the URos 2021 Conference](https://github.com/djvanderlaan/tutorial-reclin-uros2021). The data sets are from ESSnet on Data Integration as stated in the repository:
+
+```
+These totally fictional data sets are supposed to have captured details of
+persons up to the date 31 December 2011.  Any years of birth captured as 2012
+are therefore in error.  Note that in the fictional Census data set, dates of
+birth between 27 March 2011 and 31 December 2011 are not necessarily in error.
+
+census: A fictional data set to represent some observations from a
+        decennial Census
+cis: Fictional observations from Customer Information System, which is
+        combined administrative data from the tax and benefit systems
+
+In the dataset census all records contain a person_id. For some of the records
+in cis the person_id is also available. This information can be used to
+evaluate the linkage (assuming these records from the cis are representable 
+all records in the cis). 
+```
+
+```{r}
+data(census)
+data(cis)
+```
+
++ `census` object has `r nrow(census)` rows and `r ncol(census)` columns,
++ `cis` object has `r nrow(cis)` rows and `r ncol(cis)` columns.
+
+Census data
+
+```{r}
+head(census)
+```
+CIS data
+
+```{r}
+head(cis)
+```
+
+We randomly select `r as.integer(floor(nrow(census) / 2))` records from `census` and `r as.integer(floor(nrow(cis) / 2))` records from `cis`.
+
+```{r}
+set.seed(2024)
+census <- census[sample(nrow(census), floor(nrow(census) / 2)), ]
+cis <- cis[sample(nrow(cis), floor(nrow(cis) / 2)), ]
+```
+
+We need to create new columns that concatenate variables from `pername1` to `enumpc`. 
+
+```{r}
+census[, txt:=paste0(pername1, pername2, sex, dob_day, dob_mon, dob_year, enumcap, enumpc)]
+cis[, txt:=paste0(pername1, pername2, sex, dob_day, dob_mon, dob_year, enumcap, enumpc)]
+```
+
+
+# Linking datasets
+
+## Using basic functionalities of `blocking` package
+
+The goal of this exercise is to link units from the CIS dataset to the CENSUS dataset. 
+
+```{r}
+result1 <- blocking(x = census$txt, y = cis$txt, verbose = 1)
+```
+
+Distribution of distances for each pair.
+
+```{r}
+hist(result1$result$dist, main = "Distribution of distances between pairs", xlab = "Distances")
+```
+
+Example pairs.
+
+```{r}
+head(result1$result, n = 10)
+```
+
+Let's take a look at the first pair. Obviously there is a typo in the `pername1` but all the other variables are the same, so it appears to be a match.
+
+```{r}
+cbind(t(census[1, c(1:7, 9:10)]), t(cis[12088, 1:9]))
+```
+
+
+## Assessing the quality
+
+For some records, we have information about the correct linkage. We can use this information to evaluate our approach.
+
+```{r}
+matches <- merge(x = census[, .(x=1:.N, person_id)],
+                 y = cis[, .(y = 1:.N, person_id)],
+                 by = "person_id")
+matches[, block:=1:.N]
+head(matches)
+```
+
+So in our example we have `r nrow(matches)` pairs.
+
+```{r}
+result2 <- blocking(x = census$txt, y = cis$txt, verbose = 1,
+                    true_blocks = matches[, .(x, y, block)])
+```
+
+Let's see how our approach handled this problem.
+
+```{r}
+result2
+```
+
+It seems that the default parameters of the NND method result in an FNR of `r sprintf("%.2f",result2$metrics["fnr"]*100)`%. We can see if decreasing the `epsilon` parameter as suggested in the [Nearest Neighbor Descent
+](https://jlmelville.github.io/rnndescent/articles/nearest-neighbor-descent.html) vignette will help. 
+
+
+```{r}
+ann_control_pars <- controls_ann()
+ann_control_pars$nnd$epsilon <- 0.2
+
+result3 <- blocking(x = census$txt, y = cis$txt, verbose = 1, 
+                    true_blocks = matches[, .(x, y, block)], 
+                    control_ann = ann_control_pars)
+```
+
+Changing the `epsilon` search parameter from 0.1 to 0.2 decreased the FNR to `r sprintf("%.2f",result3$metrics["fnr"]*100)`%.
+
+```{r}
+result3
+```
+
+Finally, compare the NND and HNSW algorithm for this example.
+
+```{r}
+result4 <- blocking(x = census$txt, y = cis$txt, verbose = 1, 
+                    true_blocks = matches[, .(x, y, block)], 
+                    ann = "hnsw")
+```
+
+It seems that the HNSW algorithm also performed with `r sprintf("%.2f",result4$metrics["fnr"]*100)`% FNR. 
+
+```{r}
+result4
+```
+
+
+## Compare results
+
+Finally, we can compare the results of two ANN algorithms. The overlap between neighbours is given by
+
+```{r}
+c("no tuning" = mean(result2$result[order(y)]$x == result4$result[order(y)]$x)*100,
+  "with tuning" = mean(result3$result[order(y)]$x == result4$result[order(y)]$x)*100)
+```
+

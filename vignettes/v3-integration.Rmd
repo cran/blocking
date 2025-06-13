@@ -1,0 +1,83 @@
+---
+title: "Integration with existing packages"
+author: "Maciej Beręsewicz"
+execute:
+  warning: false
+  message: false
+lang: en
+output: 
+    html_vignette:
+        df_print: kable
+        toc: true
+        number_sections: true
+        fig_width: 6
+        fig_height: 4
+vignette: >
+  %\VignetteIndexEntry{Integration with existing packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Setup
+
+```{r setup}
+library(blocking)
+library(reclin2)
+```
+
+# Data
+
+In the example we will use the same dataset as in the *Blocking records for record linkage* vignette.
+
+```{r}
+data(census)
+data(cis)
+census[, x:=1:.N]
+cis[, y:=1:.N]
+```
+
+# Integration with the `reclin2` package
+
+The package contains function `pair_ann` which aims at integration with `reclin2` package. This function works as follows.
+
+```{r}
+pair_ann(x = census[1:1000], 
+         y = cis[1:1000], 
+         on = c("pername1", "pername2", "sex", "dob_day", "dob_mon", "dob_year", "enumcap", "enumpc"), 
+         deduplication = FALSE) |>
+  head()
+```
+
+Which provides you information on the total number of pairs. This can be further included in the pipeline of the `reclin2` package (note that we use a different ANN this time).
+
+```{r}
+pair_ann(x = census[1:1000], 
+         y = cis[1:1000], 
+         on = c("pername1", "pername2", "sex", "dob_day", "dob_mon", "dob_year", "enumcap", "enumpc"), 
+         deduplication = FALSE,
+         ann = "hnsw") |>
+  compare_pairs(on = c("pername1", "pername2", "sex", "dob_day", "dob_mon", "dob_year", "enumcap", "enumpc"),
+                comparators = list(cmp_jarowinkler())) |>
+  score_simple("score",
+               on = c("pername1", "pername2", "sex", "dob_day", "dob_mon", "dob_year", "enumcap", "enumpc")) |>
+  select_threshold("threshold", score = "score", threshold = 6) |>
+  link(selection = "threshold") |>
+  head()
+```
+
+# Usage with `fastLink` package
+
+Just use the `block` column in the function `fastLink::blockData()`. As a result you will obtain a list of records blocked for further processing. 
+
+# Usage with `RecordLinkage` package
+
+Just use the `block` column in the argument `blockfld` in the `compare.dedup()` or `compare.linkage()` function. Please note that `block` column for the `RecordLinkage` package should be stored as a `character` not a `numeric/integer` vector.
+
+
+
