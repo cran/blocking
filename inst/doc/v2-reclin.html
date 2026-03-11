@@ -49,8 +49,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -61,7 +62,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -382,7 +383,9 @@ in cis the person_id is also available. This information can be used to
 evaluate the linkage (assuming these records from the cis are representable 
 all records in the cis). </code></pre>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">data</span>(census)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(cis)</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">data</span>(cis)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="fu">setDT</span>(census)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">setDT</span>(cis)</span></code></pre></div>
 <ul>
 <li><code>census</code> object has 25343 rows and 13 columns,</li>
 <li><code>cis</code> object has 24613 rows and 10 columns.</li>
@@ -816,7 +819,7 @@ can use this information to evaluate our approach.</p>
 <span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt;    2    3    4    5    6    7    8    9 </span></span>
 <span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; 5567 2086  611  142   23    6    1    1 </span></span>
 <span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; ========================================================</span></span>
-<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard):</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard, in %):</span></span>
 <span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;      recall   precision         fpr         fnr    accuracy specificity </span></span>
 <span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt;     99.8159     99.5326      0.0001      0.1841     99.9999     99.9999 </span></span>
 <span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt;    f1_score </span></span>
@@ -847,7 +850,7 @@ decreased the FNR to 0.07%.</p>
 <span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt;    2    3    4    5    6    7    8    9 </span></span>
 <span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; 5592 2079  606  142   25    5    1    1 </span></span>
 <span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; ========================================================</span></span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard):</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard, in %):</span></span>
 <span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt;      recall   precision         fpr         fnr    accuracy specificity </span></span>
 <span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt;     99.9332     99.8331      0.0000      0.0668    100.0000    100.0000 </span></span>
 <span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt;    f1_score </span></span>
@@ -871,7 +874,7 @@ decreased the FNR to 0.07%.</p>
 <span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt;    2    3    4    5    6    7    8    9 </span></span>
 <span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt; 5587 2079  606  142   26    5    1    1 </span></span>
 <span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt; ========================================================</span></span>
-<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard):</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; Evaluation metrics (standard, in %):</span></span>
 <span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="co">#&gt;      recall   precision         fpr         fnr    accuracy specificity </span></span>
 <span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="co">#&gt;     99.9332     99.8331      0.0000      0.0668    100.0000    100.0000 </span></span>
 <span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="co">#&gt;    f1_score </span></span>

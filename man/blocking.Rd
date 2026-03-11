@@ -7,7 +7,7 @@
 blocking(
   x,
   y = NULL,
-  representation = c("shingles", "vectors"),
+  representation = c("shingles", "custom_matrix", "vectors"),
   model,
   deduplication = TRUE,
   on = NULL,
@@ -30,7 +30,7 @@ blocking(
 
 \item{y}{query data (a character vector or a matrix), if not provided NULL by default and thus deduplication is performed,}
 
-\item{representation}{method of representing input data (possible \code{c("shingles", "vectors")}; default \code{"shingles"}),}
+\item{representation}{method of representing input data (possible \code{c("shingles", "custom_matrix", "vectors")}; default \code{"shingles"}),}
 
 \item{model}{a matrix containing word embeddings (e.g., GloVe), required only when \code{representation = "vectors"},}
 
@@ -48,7 +48,8 @@ blocking(
 
 \item{ann_colnames}{file with column names if \code{x} or \code{y} are indices saved on the disk (currently not supported),}
 
-\item{true_blocks}{matrix with true blocks to calculate evaluation metrics (standard metrics based on confusion matrix are returned).}
+\item{true_blocks}{\code{data.frame} with true blocks to calculate evaluation metrics (standard metrics based on confusion matrix are returned).
+This \code{data.frame} must contain three columns: \code{x}, \code{y}, and \code{block}.}
 
 \item{verbose}{whether log should be provided (0 = none, 1 = main, 2 = ANN algorithm verbose used),}
 
@@ -68,7 +69,7 @@ Returns a list containing:\cr
 \item{\code{result} -- \code{data.table} with indices (rows) of x, y, block and distance between points}
 \item{\code{method} -- name of the ANN algorithm used,}
 \item{\code{deduplication} -- information whether deduplication was applied,}
-\item{\code{representation} -- information whether shingles or vectors were used,}
+\item{\code{representation} -- information whether shingles, a custom matrix, or vectors were used,}
 \item{\code{metrics} -- metrics for quality assessment, if \code{true_blocks} is provided,}
 \item{\code{confusion} -- confusion matrix, if \code{true_blocks} is provided,}
 \item{\code{colnames} -- variable names (colnames) used for search,}

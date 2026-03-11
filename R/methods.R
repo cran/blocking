@@ -9,7 +9,7 @@ print.blocking <- function(x, ...) {
   cat("========================================================\n")
   cat("Blocking based on the", x$method, "method.\n")
   cat("Number of blocks: ", length(unique(block_ids)), ".\n",sep="")
-  if (x$representation == "shingles") {
+  if (x$representation %in% c("shingles", "custom_matrix")) {
     cat("Number of columns used for blocking: ", NROW(x$colnames), ".\n",sep="")
   }
   cat("Reduction ratio: ", sprintf("%.4f", rr), ".\n",sep="")
@@ -21,7 +21,7 @@ print.blocking <- function(x, ...) {
 
   if (!is.null(x$metrics)) {
     cat("========================================================\n")
-    cat("Evaluation metrics (standard):\n" )
+    cat("Evaluation metrics (standard, in %):\n" )
     metrics <- as.numeric(sprintf("%.4f", x$metrics*100))
     names(metrics)  <- names(x$metrics)
     print(metrics)
@@ -34,8 +34,9 @@ print.blocking <- function(x, ...) {
 #' @exportS3Method
 print.est_block_error <- function(x, ...) {
 
-  cat("FPR: ", x$FPR, "\n")
-  cat("FNR: ", x$FNR, "\n")
+  cat("Estimated FPR: ", sprintf("%.4f", x$FPR * 100), "%\n", sep = "")
+  cat("Estimated FNR: ", sprintf("%.4f", x$FNR * 100), "%\n", sep = "")
+  cat("Number of classes in the model: ", x$G, "\n")
 
   cat("========================================================\n")
 
@@ -46,3 +47,20 @@ print.est_block_error <- function(x, ...) {
   }
 }
 
+#' @method logLik est_block_error
+#' @exportS3Method
+logLik.est_block_error <- function(object, ...) {
+
+  val <- object$log_lik
+  if (object$equal_p) {
+    k <- 2 * object$G
+  } else {
+    k <- 3 * object$G - 1
+  }
+
+  attr(val, "df") <- k
+  class(val) <- "logLik"
+
+  val
+
+}

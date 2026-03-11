@@ -1,7 +1,7 @@
 Package: blocking
 Type: Package
 Title: Various Blocking Methods for Entity Resolution
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: 
   c(person(given = "Maciej",
              family = "Beręsewicz",
@@ -19,17 +19,17 @@ LazyData: true
 URL: https://github.com/ncn-foreigners/blocking,
         https://ncn-foreigners.ue.poznan.pl/blocking/
 BugReports: https://github.com/ncn-foreigners/blocking/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: text2vec, tokenizers, RcppHNSW, RcppAnnoy, mlpack, rnndescent,
         igraph, data.table, methods, readr, utils, Matrix
 Suggests: tinytest, knitr, rmarkdown, reclin2
 VignetteBuilder: knitr
 Depends: R (>= 4.1.0)
 NeedsCompilation: no
-Packaged: 2025-06-18 06:34:50 UTC; berenz
+Packaged: 2026-03-11 09:02:15 UTC; adamstruzik
 Author: Maciej Beręsewicz [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-8281-4301>),
   Adam Struzik [aut, ctr]
 Maintainer: Maciej Beręsewicz <maciej.beresewicz@ue.poznan.pl>
 Repository: CRAN
-Date/Publication: 2025-06-18 08:40:35 UTC
+Date/Publication: 2026-03-11 12:40:02 UTC

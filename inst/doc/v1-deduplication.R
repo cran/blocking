@@ -5,6 +5,7 @@ knitr::opts_chunk$set(
   message = FALSE,
   comment = "#>"
 )
+data.table::setDTthreads(1)
 
 ## ----setup--------------------------------------------------------------------
 library(blocking)
@@ -12,6 +13,7 @@ library(data.table)
 
 ## -----------------------------------------------------------------------------
 data(RLdata500)
+setDT(RLdata500)
 head(RLdata500)
 
 ## -----------------------------------------------------------------------------
@@ -23,6 +25,12 @@ head(RLdata500)
 
 ## -----------------------------------------------------------------------------
 df_blocks <- blocking(x = RLdata500$txt, ann = "nnd", verbose = 1, graph = TRUE, seed = 2024)
+
+## ----echo = FALSE-------------------------------------------------------------
+blocks_tab <- table(df_blocks$result$block)
+block_ids <- rep(as.numeric(names(blocks_tab)), blocks_tab+1)
+block_size <- as.numeric(names(table(table(block_ids))))
+block_count <- as.vector(table(table(block_ids)))
 
 ## -----------------------------------------------------------------------------
 df_blocks

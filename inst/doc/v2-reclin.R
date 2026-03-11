@@ -3,6 +3,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+data.table::setDTthreads(1)
 
 ## ----setup--------------------------------------------------------------------
 library(blocking)
@@ -11,6 +12,8 @@ library(data.table)
 ## -----------------------------------------------------------------------------
 data(census)
 data(cis)
+setDT(census)
+setDT(cis)
 
 ## -----------------------------------------------------------------------------
 head(census)
