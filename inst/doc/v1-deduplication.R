@@ -27,10 +27,11 @@ head(RLdata500)
 df_blocks <- blocking(x = RLdata500$txt, ann = "nnd", verbose = 1, graph = TRUE, seed = 2024)
 
 ## ----echo = FALSE-------------------------------------------------------------
-blocks_tab <- table(df_blocks$result$block)
-block_ids <- rep(as.numeric(names(blocks_tab)), blocks_tab+1)
-block_size <- as.numeric(names(table(table(block_ids))))
-block_count <- as.vector(table(table(block_ids)))
+block_membership <- unique(melt(df_blocks$result[, .(x, y, block)],
+                                id.vars = "block")[, .(record = value, block)])
+block_size_distribution <- table(table(block_membership$block))
+block_size <- as.numeric(names(block_size_distribution))
+block_count <- as.vector(block_size_distribution)
 
 ## -----------------------------------------------------------------------------
 df_blocks

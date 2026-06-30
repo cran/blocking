@@ -375,7 +375,7 @@ records for record linkage</em> vignette.</p>
 <div id="integration-with-the-reclin2-package" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Integration with the
 <code>reclin2</code> package</h1>
-<p>The package contains function <code>pair_ann</code> which aims at
+<p>The package contains function <code>pair_ann()</code> which aims at
 integration with <code>reclin2</code> package. This function works as
 follows.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">pair_ann</span>(<span class="at">x =</span> census[<span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>], </span>
@@ -442,37 +442,35 @@ be further included in the pipeline of the <code>reclin2</code> package
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="fu">link</span>(<span class="at">selection =</span> <span class="st">&quot;threshold&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="fu">head</span>()</span></code></pre></div>
 <div class="kable-table">
-<table style="width:100%;">
+<table>
 <colgroup>
 <col width="1%" />
 <col width="1%" />
+<col width="4%" />
+<col width="3%" />
+<col width="3%" />
+<col width="1%" />
+<col width="3%" />
+<col width="3%" />
 <col width="3%" />
 <col width="2%" />
-<col width="2%" />
-<col width="1%" />
-<col width="2%" />
-<col width="2%" />
-<col width="2%" />
+<col width="6%" />
 <col width="2%" />
 <col width="5%" />
-<col width="2%" />
-<col width="4%" />
+<col width="6%" />
 <col width="5%" />
-<col width="4%" />
 <col width="1%" />
-<col width="12%" />
+<col width="4%" />
 <col width="3%" />
-<col width="2%" />
-<col width="2%" />
+<col width="3%" />
 <col width="1%" />
-<col width="2%" />
-<col width="2%" />
+<col width="3%" />
+<col width="3%" />
+<col width="3%" />
+<col width="6%" />
 <col width="2%" />
 <col width="5%" />
-<col width="2%" />
-<col width="4%" />
 <col width="1%" />
-<col width="11%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -492,7 +490,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <th align="left">cap_add</th>
 <th align="left">census_id</th>
 <th align="right">x</th>
-<th align="left">txt.x</th>
 <th align="left">person_id.y</th>
 <th align="left">pername1.y</th>
 <th align="left">pername2.y</th>
@@ -504,7 +501,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <th align="left">enumpc.y</th>
 <th align="left">cis_id</th>
 <th align="right">y</th>
-<th align="left">txt.y</th>
 </tr>
 </thead>
 <tbody>
@@ -525,7 +521,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">39, Springfield Road</td>
 <td align="left">CENSDE256NG039003</td>
 <td align="right">945</td>
-<td align="left">HARRIETTHOMSONF121199539 SPRINGFIELD ROADDE256NG</td>
 <td align="left">DE256NG039003</td>
 <td align="left">HARRIET</td>
 <td align="left">THOMSON</td>
@@ -537,7 +532,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE256NG</td>
 <td align="left">CISDE256NG039003</td>
 <td align="right">11</td>
-<td align="left">HARRIETTHOMSONF12139 SPRINGFIELD ROADDE256NG</td>
 </tr>
 <tr class="even">
 <td align="right">71</td>
@@ -556,7 +550,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">62, Church Road</td>
 <td align="left">CENSDE159QA062001</td>
 <td align="right">427</td>
-<td align="left">LEWISGREENM233197362 CHURCH ROADDE159QA</td>
 <td align="left">DE159QA062001</td>
 <td align="left">LEWIS</td>
 <td align="left">GREEN</td>
@@ -568,7 +561,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE159QA</td>
 <td align="left">CISDE159QA062001</td>
 <td align="right">71</td>
-<td align="left">LEWISGREENM23362 CHURCH ROADDE159QA</td>
 </tr>
 <tr class="odd">
 <td align="right">83</td>
@@ -587,7 +579,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">25, Woodlands Road</td>
 <td align="left">CENSDE237GG025002</td>
 <td align="right">720</td>
-<td align="left">IMOGENDARISF64196825 WOODLANDS ROADDE237GG</td>
 <td align="left">DE237GG025002</td>
 <td align="left">IMOGEW</td>
 <td align="left">DAVIS</td>
@@ -599,7 +590,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE237GG</td>
 <td align="left">CISDE237GG025002</td>
 <td align="right">83</td>
-<td align="left">IMOGEWDAVISF6425 WOODLANDS ROADDE237GG</td>
 </tr>
 <tr class="even">
 <td align="right">99</td>
@@ -618,7 +608,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">22, Park Lane</td>
 <td align="left">CENSDE125LU022001</td>
 <td align="right">136</td>
-<td align="left">DANIECMICCERM214194722 PARK LANEDE125LU</td>
 <td align="left">DE125LU022001</td>
 <td align="left">DAMIEL</td>
 <td align="left">HILLER</td>
@@ -630,7 +619,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE125LU</td>
 <td align="left">CISDE125LU022001</td>
 <td align="right">99</td>
-<td align="left">DAMIELHILLERM21422 PARK LANEDE125LU</td>
 </tr>
 <tr class="odd">
 <td align="right">154</td>
@@ -649,7 +637,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">40, Springfield Road</td>
 <td align="left">CENSDE256NG040002</td>
 <td align="right">949</td>
-<td align="left">CHLOEWILSONF57197840 SPRINGFIELD ROADDE256NG</td>
 <td align="left">DE256NG040002</td>
 <td align="left">CHLOE</td>
 <td align="left">WILSOM</td>
@@ -661,7 +648,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE256NG</td>
 <td align="left">CISDE256NG040002</td>
 <td align="right">154</td>
-<td align="left">CHLOEWILSOMF5740 SPRINGFIELD ROADDE256NG</td>
 </tr>
 <tr class="even">
 <td align="right">156</td>
@@ -680,7 +666,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">35, Church Road</td>
 <td align="left">CENSDE159QY035002</td>
 <td align="right">549</td>
-<td align="left">AVAKINGF77196935 CHURCH ROADDE159QY</td>
 <td align="left">DE159QY035002</td>
 <td align="left">AVA</td>
 <td align="left">KING</td>
@@ -692,7 +677,6 @@ be further included in the pipeline of the <code>reclin2</code> package
 <td align="left">DE159QY</td>
 <td align="left">CISDE159QY035002</td>
 <td align="right">156</td>
-<td align="left">AVAKINGF7735 CHURCH ROADDE159QY</td>
 </tr>
 </tbody>
 </table>

@@ -1,5 +1,11 @@
 # development
 
+# version 1.0.3
+
++ Added support for the `on` and `on_blocking` arguments
+in the `blocking()` and `pair_ann()` functions.
++ Fixed errors in the evaluation functions.
+
 # version 1.0.2
 
 + Updated `est_block_error` function.
